@@ -41,7 +41,3 @@ pip install pytelegrambotapi
 python main.py
 ```
 
-## 📈 Направления для дальнейшей оптимизации (Roadmap)
-* **Data Persistence**: Перенос хранения состояний сессий (`active_conversations`) из RAM в key-value хранилище Redis или реляционную БД (PostgreSQL / SQLite) для предотвращения потери данных при перезапуске процесса.
-* **Asynchrony**: Миграция на асинхронный фреймворк `aiogram` (или `python-telegram-bot`) для повышения пропускной способности (Highload) под нагрузкой.
-* **Containerization**: Написание `Dockerfile` и `docker-compose.yml` для изолированного развертывания приложения.
