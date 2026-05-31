@@ -2,18 +2,14 @@ import telebot
 from telebot import types
 from datetime import datetime, timedelta
 
-# Настройки бота (вставь свой токен вместо 'YOUR_BOT_TOKEN')
-API_TOKEN = '7879954274:AAE7yR9UGAYUDX1sgSBWpdjbpGgOsoDgNeY'
+API_TOKEN = '****' # токен тг
 bot = telebot.TeleBot(API_TOKEN)
+ADMIN_IDS = [123456789]  # список админов(примеры id)
 
-# Список ID админов (можно добавить несколько)
-ADMIN_IDS = [1418076557, 838467332]  # Пример ID
 
-# Улучшенное хранилище данных
-active_conversations = {}  # {user_id: {"partner_id": int, "expires": datetime}}
-message_pairs = {}  # {user_msg_id: {"original_sender": int, "original_receiver": int}}
+active_conversations = {}  
+message_pairs = {} 
 
-# Логирование
 def log(action, details):
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     print(f"[{timestamp}] {action}: {details}")
@@ -32,7 +28,6 @@ def start(message: types.Message):
 
     if len(args) > 1 and args[1].isdigit():
         partner_id = int(args[1])
-        # Создаем двухстороннюю беседу
         active_conversations[user_id] = {
             "partner_id": partner_id,
             "expires": datetime.now() + timedelta(hours=24)
@@ -62,7 +57,6 @@ def handle_message(message: types.Message):
     if user_id in active_conversations:
         partner_id = active_conversations[user_id]["partner_id"]
         
-        # Отправляем сообщение
         sent_msg = bot.send_message(
             partner_id,
             f"📨 Анонимное сообщение:\n\n{message.text}",
@@ -70,7 +64,6 @@ def handle_message(message: types.Message):
             reply_markup=create_reply_keyboard(user_id)
         )
         
-        # Сохраняем связь сообщений
         message_pairs[sent_msg.message_id] = {
             "original_sender": user_id,
             "original_receiver": partner_id
@@ -97,7 +90,6 @@ def handle_reply(call: types.CallbackQuery):
         current_user_id = call.from_user.id
         
         if original_sender_id in active_conversations:
-            # Обновляем беседу
             active_conversations[current_user_id] = {
                 "partner_id": original_sender_id,
                 "expires": datetime.now() + timedelta(hours=24)
@@ -132,12 +124,11 @@ if __name__ == "__main__":
     print(f"Админы: {ADMIN_IDS}")
     print("=== Логи ===")
     
-    # Периодическая очистка
     import threading
     def schedule_cleanup():
         while True:
             cleanup_expired()
-            threading.Event().wait(3600)  # Каждый час
+            threading.Event().wait(3600) 
     
     cleanup_thread = threading.Thread(target=schedule_cleanup)
     cleanup_thread.daemon = True
